@@ -28,12 +28,13 @@ inline void SleepyduckOpenSSLVersionScalarFun(DataChunk &args, ExpressionState &
 
 static void LoadInternal(ExtensionLoader &loader) {
 	// Register a scalar function
-	auto sleepyduck_scalar_function = ScalarFunction("sleepyduck", {LogicalType::VARCHAR}, LogicalType::VARCHAR, SleepyduckScalarFun);
+	auto sleepyduck_scalar_function =
+	    ScalarFunction("sleepyduck", {LogicalType::VARCHAR}, LogicalType::VARCHAR, SleepyduckScalarFun);
 	loader.RegisterFunction(sleepyduck_scalar_function);
 
 	// Register another scalar function
-	auto sleepyduck_openssl_version_scalar_function = ScalarFunction("sleepyduck_openssl_version", {LogicalType::VARCHAR},
-	                                                            LogicalType::VARCHAR, SleepyduckOpenSSLVersionScalarFun);
+	auto sleepyduck_openssl_version_scalar_function = ScalarFunction(
+	    "sleepyduck_openssl_version", {LogicalType::VARCHAR}, LogicalType::VARCHAR, SleepyduckOpenSSLVersionScalarFun);
 	loader.RegisterFunction(sleepyduck_openssl_version_scalar_function);
 }
 

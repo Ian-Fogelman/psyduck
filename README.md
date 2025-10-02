@@ -1,10 +1,10 @@
-# Sleepyduck
+# Psyduck
 
 This repository is based on https://github.com/duckdb/extension-template, check it out if you want to build and ship your own DuckDB extension.
 
 ---
 
-This extension, Sleepyduck, allow you to ... <extension_goal>.
+This extension, Psyduck, allow you to ... <extension_goal>.
 
 
 ## Building
@@ -26,23 +26,23 @@ The main binaries that will be built are:
 ```sh
 ./build/release/duckdb
 ./build/release/test/unittest
-./build/release/extension/sleepyduck/sleepyduck.duckdb_extension
+./build/release/extension/psyduck/psyduck.duckdb_extension
 ```
 - `duckdb` is the binary for the duckdb shell with the extension code automatically loaded.
 - `unittest` is the test runner of duckdb. Again, the extension is already linked into the binary.
-- `sleepyduck.duckdb_extension` is the loadable binary as it would be distributed.
+- `psyduck.duckdb_extension` is the loadable binary as it would be distributed.
 
 ## Running the extension
 To run the extension code, simply start the shell with `./build/release/duckdb`.
 
-Now we can use the features from the extension directly in DuckDB. The template contains a single scalar function `sleepyduck()` that takes a string arguments and returns a string:
+Now we can use the features from the extension directly in DuckDB. The template contains a single scalar function `psyduck()` that takes a string arguments and returns a string:
 ```
-D select sleepyduck('Jane') as result;
+D select psyduck('Jane') as result;
 ┌───────────────┐
 │    result     │
 │    varchar    │
 ├───────────────┤
-│ Sleepyduck Jane 🐥 │
+│ Psyduck Jane 🐥 │
 └───────────────┘
 ```
 
@@ -81,6 +81,6 @@ DuckDB. To specify a specific version, you can pass the version instead.
 
 After running these steps, you can install and load your extension using the regular INSTALL/LOAD commands in DuckDB:
 ```sql
-INSTALL sleepyduck
-LOAD sleepyduck
+INSTALL psyduck
+LOAD psyduck
 ```

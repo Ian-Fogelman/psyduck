@@ -4,7 +4,7 @@
 
 namespace duckdb {
 
-class SleepyduckExtension : public Extension {
+class PsyduckExtension : public Extension {
 public:
 	void Load(ExtensionLoader &db) override;
 	std::string Name() override;

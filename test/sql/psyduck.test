@@ -1,0 +1,33 @@
+# name: test/sql/psyduck.test
+# description: test psyduck extension
+# group: [sql]
+
+#require psyduck
+
+# Before we load the extension, this will fail
+statement error
+SELECT COUNT(*) as pokemon_count FROM list_pokemon();
+----
+Catalog Error: Table Function with name list_pokemon does not exist!
+
+# Load the psyduck extension
+require psyduck
+
+query I
+SELECT COUNT(*) as cnt FROM list_pokemon();
+----
+151
+
+statement ok 
+CREATE TABLE pokemon as SELECT * FROM list_pokemon();
+
+query I 
+SELECT name FROM pokemon where is_duck = 1 and name like '%Psyduck%';
+----
+Psyduck
+
+query I 
+SELECT name FROM pokemon where number = 6;
+----
+Charizard
+

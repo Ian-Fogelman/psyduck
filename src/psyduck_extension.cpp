@@ -17,12 +17,13 @@ namespace duckdb {
 
 // Structure to hold bind data for psyduck_subscribe
 struct ListPokemonBindData : public TableFunctionData {
-	explicit ListPokemonBindData(){}
+	explicit ListPokemonBindData() {
+	}
 	bool did_subscribe = false;
 };
 
 static unique_ptr<FunctionData> ListPokemonBind(ClientContext &context, TableFunctionBindInput &input,
-                                                       vector<LogicalType> &return_types, vector<string> &names) {
+                                                vector<LogicalType> &return_types, vector<string> &names) {
 
 	return_types.emplace_back(LogicalType::UBIGINT);
 	names.emplace_back("number");
@@ -73,17 +74,17 @@ static unique_ptr<FunctionData> ListPokemonBind(ClientContext &context, TableFun
 }
 
 void ListPokemon(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {
-    D_ASSERT(data_p.bind_data);
-    auto &bind_data = data_p.bind_data->CastNoConst<ListPokemonBindData>();
+	D_ASSERT(data_p.bind_data);
+	auto &bind_data = data_p.bind_data->CastNoConst<ListPokemonBindData>();
 
-    if (bind_data.did_subscribe) {
-        output.SetCardinality(0);
-        return;
-    }
-    bind_data.did_subscribe = true;
+	if (bind_data.did_subscribe) {
+		output.SetCardinality(0);
+		return;
+	}
+	bind_data.did_subscribe = true;
 
 	// Set output to 151 rows
-    output.SetCardinality(pokemon.size());
+	output.SetCardinality(pokemon.size());
 
 	for (idx_t i = 0; i < pokemon.size(); i++) {
 		FlatVector::GetData<uint64_t>(output.data[0])[i] = pokemon[i].number;
@@ -105,10 +106,7 @@ void ListPokemon(ClientContext &context, TableFunctionInput &data_p, DataChunk &
 }
 
 static void LoadInternal(ExtensionLoader &loader) {
-	// Register the psyduck_subscribe table function
-	auto subscribe_function =
-	    TableFunction("list_pokemon", {}, ListPokemon, ListPokemonBind);
-	//subscribe_function.named_parameters["capacity"] = LogicalType::INTEGER;
+	auto subscribe_function = TableFunction("list_pokemon", {}, ListPokemon, ListPokemonBind);
 	loader.RegisterFunction(subscribe_function);
 }
 
@@ -135,5 +133,4 @@ extern "C" {
 DUCKDB_CPP_EXTENSION_ENTRY(psyduck, loader) {
 	duckdb::LoadInternal(loader);
 }
-
 }

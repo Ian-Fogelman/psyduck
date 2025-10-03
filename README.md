@@ -37,9 +37,9 @@ To run the extension code, simply start the shell with `./build/release/duckdb`.
 
 Create a table of pokémon and return... A duck:
 
-```
-D CREATE TABLE pokemon as SELECT * FROM list_pokemon();
-D SELECT name FROM pokemon where is_duck = 1 and name like '%Psyduck%';
+```sql
+CREATE TABLE pokemon as SELECT * FROM list_pokemon();
+SELECT name FROM pokemon where is_duck = 1 and name like '%Psyduck%';
 ┌───────────────┐
 │    result     │
 │    varchar    │
@@ -49,18 +49,18 @@ D SELECT name FROM pokemon where is_duck = 1 and name like '%Psyduck%';
 ```
 
 Select the top 10 pokémon:
-```
-D SELECT * FROM list_pokemon() where number <= 10;
+```sql
+SELECT * FROM list_pokemon() where number <= 10;
 ```
 
 Select legendary pokémon:
-```
-D SELECT * FROM list_pokemon() where is_legendary = 1;
+```sql
+SELECT * FROM list_pokemon() where is_legendary = 1;
 ```
 
 Select the best pokémon Charizard 😉:
-```
-D SELECT number,name,type1,"height(m)","weight(kg)",base_total FROM list_pokemon() where name = 'Charizard';
+```sql
+SELECT number,name,type1,"height(m)","weight(kg)",base_total FROM list_pokemon() where name = 'Charizard';
 ```
 
 ## Running the tests

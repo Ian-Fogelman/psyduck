@@ -19,7 +19,7 @@ namespace duckdb {
 struct ListPokemonBindData : public TableFunctionData {
 	explicit ListPokemonBindData() {
 	}
-	bool did_subscribe = false;
+	bool indicator = false;
 };
 
 static unique_ptr<FunctionData> ListPokemonBind(ClientContext &context, TableFunctionBindInput &input,
@@ -77,11 +77,11 @@ void ListPokemon(ClientContext &context, TableFunctionInput &data_p, DataChunk &
 	D_ASSERT(data_p.bind_data);
 	auto &bind_data = data_p.bind_data->CastNoConst<ListPokemonBindData>();
 
-	if (bind_data.did_subscribe) {
+	if (bind_data.indicator) {
 		output.SetCardinality(0);
 		return;
 	}
-	bind_data.did_subscribe = true;
+	bind_data.indicator = true;
 
 	// Set output to 151 rows
 	output.SetCardinality(pokemon.size());

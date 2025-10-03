@@ -4,7 +4,7 @@ This repository is based on https://github.com/duckdb/extension-template, check 
 
 ---
 
-This extension, Psyduck, allow you to query pokemon data natively inside your DuckDB instance.
+This extension, Psyduck, allows you to query pokémon data natively inside your DuckDB instance.
 
 
 ## Building
@@ -35,7 +35,8 @@ The main binaries that will be built are:
 ## Running the extension
 To run the extension code, simply start the shell with `./build/release/duckdb`.
 
-Now we can use the features from the extension directly in DuckDB. The template contains a single scalar function `psyduck()` that takes a string arguments and returns a string:
+Create a table of pokémon and return... A duck:
+
 ```
 D CREATE TABLE pokemon as SELECT * FROM list_pokemon();
 D SELECT name FROM pokemon where is_duck = 1 and name like '%Psyduck%';
@@ -45,6 +46,21 @@ D SELECT name FROM pokemon where is_duck = 1 and name like '%Psyduck%';
 ├───────────────┤
 │ Psyduck       │
 └───────────────┘
+```
+
+Select the top 10 pokémon:
+```
+D SELECT * FROM list_pokemon() where number <= 10;
+```
+
+Select legendary pokémon:
+```
+D SELECT * FROM list_pokemon() where is_legendary = 1;
+```
+
+Select the best pokémon Charizard 😉:
+```
+D SELECT number,name,type1,"height(m)","weight(kg)",base_total FROM list_pokemon() where name = 'Charizard';
 ```
 
 ## Running the tests

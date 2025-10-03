@@ -40,6 +40,10 @@ Create a table of pokémon and return... A duck:
 ```sql
 CREATE TABLE pokemon as SELECT * FROM list_pokemon();
 SELECT name FROM pokemon where is_duck = 1 and name like '%Psyduck%';
+```
+
+Results:
+```
 ┌───────────────┐
 │    result     │
 │    varchar    │

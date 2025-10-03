@@ -6,6 +6,7 @@ This repository is based on https://github.com/duckdb/extension-template, check 
 
 This extension, Psyduck, allows you to query pokémon data natively inside your DuckDB instance.
 
+![alt text](static/PysduckDemo.gif)
 
 ## Building
 ### Managing dependencies

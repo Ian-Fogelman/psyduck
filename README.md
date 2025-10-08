@@ -103,6 +103,13 @@ DuckDB. To specify a specific version, you can pass the version instead.
 
 After running these steps, you can install and load your extension using the regular INSTALL/LOAD commands in DuckDB:
 ```sql
-INSTALL psyduck
-LOAD psyduck
+INSTALL psyduck;
+LOAD psyduck;
+```
+
+To install and load the latest stable release:
+
+```sql
+INSTALL psyduck FROM community;
+LOAD psyduck;
 ```

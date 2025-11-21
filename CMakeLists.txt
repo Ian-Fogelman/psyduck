@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-
+set(CMAKE_CXX_STANDARD 17)
 # Set extension name here
 set(TARGET_NAME psyduck)
 

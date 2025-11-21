@@ -12,13 +12,13 @@
 #include "duckdb/parser/expression/function_expression.hpp"
 #include "duckdb/parser/tableref/table_function_ref.hpp"
 #include "pokemon_data.hpp"
+#include "pokemon_move_data.hpp"
 
 namespace duckdb {
 
-// Structure to hold bind data for psyduck_subscribe
+// ListPokemon Functions Begin
 struct ListPokemonBindData : public TableFunctionData {
-	explicit ListPokemonBindData() {
-	}
+	explicit ListPokemonBindData() {}
 	bool indicator = false;
 };
 
@@ -105,9 +105,88 @@ void ListPokemon(ClientContext &context, TableFunctionInput &data_p, DataChunk &
 	}
 }
 
+// ListPokemon Functions End
+
+// ListPokemonMoves Functions Begin
+
+struct ListPokemonMovesBindData : public TableFunctionData {
+	explicit ListPokemonMovesBindData() {}
+	bool indicator = false;
+};
+
+static unique_ptr<FunctionData> ListPokemonMovesBind(ClientContext &context, TableFunctionBindInput &input,vector<LogicalType> &return_types, vector<string> &names) {
+	/*
+		struct Move {
+		const char* name;
+		PokemonType type;
+		std::optional<int> power;
+		std::optional<int> accuracy;
+		int pp;
+	};
+	*/
+
+	return_types.emplace_back(LogicalType::VARCHAR);
+	names.emplace_back("name");
+
+	return_types.emplace_back(LogicalType::VARCHAR);
+	names.emplace_back("type");
+
+	return_types.emplace_back(LogicalType::INTEGER);
+	names.emplace_back("power");
+
+	return_types.emplace_back(LogicalType::INTEGER);
+	names.emplace_back("accuracy");
+
+	return_types.emplace_back(LogicalType::INTEGER);
+	names.emplace_back("pp");
+
+	return make_uniq<ListPokemonBindData>();
+};
+
+void ListPokemonMoves(ClientContext &context, TableFunctionInput &data_p, DataChunk &output){
+D_ASSERT(data_p.bind_data);
+	auto &bind_data = data_p.bind_data->CastNoConst<ListPokemonBindData>();
+
+	if (bind_data.indicator) {
+		output.SetCardinality(0);
+		return;
+	}
+	bind_data.indicator = true;
+	std::vector<Move> pokemon_moves = GetGen1Moves();
+	output.SetCardinality(pokemon_moves.size());
+	for (idx_t i = 0; i < pokemon_moves.size(); i++) {
+		FlatVector::GetData<duckdb::string_t>(output.data[0])[i] = duckdb::string_t(pokemon_moves[i].name);
+		FlatVector::GetData<duckdb::string_t>(output.data[1])[i] = pokemon_moves[i].type;
+		// Handle power (optional)
+		if (pokemon_moves[i].power.has_value()) {
+			FlatVector::GetData<int32_t>(output.data[2])[i] = pokemon_moves[i].power.value();
+		} else {
+			FlatVector::SetNull(output.data[2], i, true);
+		}
+
+		// Handle accuracy (optional)
+		if (pokemon_moves[i].accuracy.has_value()) {
+			FlatVector::GetData<int32_t>(output.data[3])[i] = pokemon_moves[i].accuracy.value();
+		} else {
+			FlatVector::SetNull(output.data[3], i, true);
+		}
+
+		// Handle pp (optional)
+		if (pokemon_moves[i].pp.has_value()) {
+			FlatVector::GetData<int32_t>(output.data[4])[i] = pokemon_moves[i].pp.value();
+		} else {
+			FlatVector::SetNull(output.data[4], i, true);
+		}
+	}
+};
+
+// ListPokemonMoves Functions End
+
 static void LoadInternal(ExtensionLoader &loader) {
 	auto subscribe_function = TableFunction("list_pokemon", {}, ListPokemon, ListPokemonBind);
+	auto list_pokemon_moves_function = TableFunction("list_pokemon_moves", {}, ListPokemonMoves, ListPokemonMovesBind);
 	loader.RegisterFunction(subscribe_function);
+	loader.RegisterFunction(list_pokemon_moves_function);
 }
 
 void PsyduckExtension::Load(ExtensionLoader &loader) {

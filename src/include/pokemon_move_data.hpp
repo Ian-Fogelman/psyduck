@@ -2,6 +2,7 @@
 #include <vector>
 #include <optional>
 #include <string>
+#include "psyduck_extension.hpp"
 
 namespace duckdb {
 

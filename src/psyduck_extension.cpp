@@ -183,9 +183,9 @@ D_ASSERT(data_p.bind_data);
 // ListPokemonMoves Functions End
 
 static void LoadInternal(ExtensionLoader &loader) {
-	auto list_pokemon = TableFunction("list_pokemon", {}, ListPokemon, ListPokemonBind);
+	auto subscribe_function = TableFunction("list_pokemon", {}, ListPokemon, ListPokemonBind);
 	auto list_pokemon_moves_function = TableFunction("list_pokemon_moves", {}, ListPokemonMoves, ListPokemonMovesBind);
-	loader.RegisterFunction(list_pokemon);
+	loader.RegisterFunction(subscribe_function);
 	loader.RegisterFunction(list_pokemon_moves_function);
 }
 

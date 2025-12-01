@@ -18,7 +18,8 @@ namespace duckdb {
 
 // ListPokemon Functions Begin
 struct ListPokemonBindData : public TableFunctionData {
-	explicit ListPokemonBindData() {}
+	explicit ListPokemonBindData() {
+	}
 	bool indicator = false;
 };
 
@@ -110,18 +111,20 @@ void ListPokemon(ClientContext &context, TableFunctionInput &data_p, DataChunk &
 // ListPokemonMoves Functions Begin
 
 struct ListPokemonMovesBindData : public TableFunctionData {
-	explicit ListPokemonMovesBindData() {}
+	explicit ListPokemonMovesBindData() {
+	}
 	bool indicator = false;
 };
 
-static unique_ptr<FunctionData> ListPokemonMovesBind(ClientContext &context, TableFunctionBindInput &input,vector<LogicalType> &return_types, vector<string> &names) {
+static unique_ptr<FunctionData> ListPokemonMovesBind(ClientContext &context, TableFunctionBindInput &input,
+                                                     vector<LogicalType> &return_types, vector<string> &names) {
 	/*
-		struct Move {
-		const char* name;
-		PokemonType type;
-		std::optional<int> power;
-		std::optional<int> accuracy;
-		int pp;
+	    struct Move {
+	    const char* name;
+	    PokemonType type;
+	    std::optional<int> power;
+	    std::optional<int> accuracy;
+	    int pp;
 	};
 	*/
 
@@ -143,8 +146,8 @@ static unique_ptr<FunctionData> ListPokemonMovesBind(ClientContext &context, Tab
 	return make_uniq<ListPokemonBindData>();
 };
 
-void ListPokemonMoves(ClientContext &context, TableFunctionInput &data_p, DataChunk &output){
-D_ASSERT(data_p.bind_data);
+void ListPokemonMoves(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {
+	D_ASSERT(data_p.bind_data);
 	auto &bind_data = data_p.bind_data->CastNoConst<ListPokemonBindData>();
 
 	if (bind_data.indicator) {

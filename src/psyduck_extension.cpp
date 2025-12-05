@@ -24,7 +24,6 @@ struct ListPokemonBindData : public TableFunctionData {
 
 static unique_ptr<FunctionData> ListPokemonBind(ClientContext &context, TableFunctionBindInput &input,
                                                 vector<LogicalType> &return_types, vector<string> &names) {
-
 	return_types.emplace_back(LogicalType::UBIGINT);
 	names.emplace_back("number");
 

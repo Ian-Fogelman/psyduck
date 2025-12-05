@@ -1,5 +1,5 @@
 #pragma once
-//test
+
 #include "duckdb.hpp"
 
 namespace duckdb {

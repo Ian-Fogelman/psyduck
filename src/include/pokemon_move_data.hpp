@@ -1,8 +1,8 @@
 #pragma once
-//#include <vector>
-//#include <optional>
-//#include <string>
-#include "duckdb/common/common.hpp"
+#include <vector>
+#include <optional>
+#include <string>
+//#include "duckdb/common/common.hpp"
 
 namespace duckdb {
 

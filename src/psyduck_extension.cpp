@@ -12,6 +12,7 @@
 #include "duckdb/parser/expression/function_expression.hpp"
 #include "duckdb/parser/tableref/table_function_ref.hpp"
 #include "pokemon_data.hpp"
+#include "pokemon_moves_data.hpp"
 
 namespace duckdb {
 
@@ -24,6 +25,7 @@ struct ListPokemonBindData : public TableFunctionData {
 
 static unique_ptr<FunctionData> ListPokemonBind(ClientContext &context, TableFunctionBindInput &input,
                                                 vector<LogicalType> &return_types, vector<string> &names) {
+
 	return_types.emplace_back(LogicalType::UBIGINT);
 	names.emplace_back("number");
 
@@ -104,9 +106,149 @@ void ListPokemon(ClientContext &context, TableFunctionInput &data_p, DataChunk &
 	}
 }
 
+//List Pokemon Moves Begin
+struct ListPokemonMovesBindData : public TableFunctionData {
+	explicit ListPokemonMovesBindData() {
+	}
+	bool indicator = false;
+};
+
+
+static unique_ptr<FunctionData> ListPokemonMovesBind(ClientContext &, TableFunctionBindInput &,
+                                                     vector<LogicalType> &return_types,
+                                                     vector<string> &names) {
+    return_types.emplace_back(LogicalType::VARCHAR);
+    names.emplace_back("name");
+
+    return_types.emplace_back(LogicalType::VARCHAR);
+    names.emplace_back("type");
+
+    return_types.emplace_back(LogicalType::INTEGER);
+    names.emplace_back("power");
+
+    return_types.emplace_back(LogicalType::INTEGER);
+    names.emplace_back("accuracy");
+
+    return_types.emplace_back(LogicalType::INTEGER);
+    names.emplace_back("pp");
+
+    return make_uniq<ListPokemonBindData>(); // reuse the same struct
+}
+
+// static unique_ptr<FunctionData> ListPokemonMovesBind(ClientContext &context, TableFunctionBindInput &input,
+//                                                 vector<LogicalType> &return_types, vector<string> &names) {
+
+// 	return_types.emplace_back(LogicalType::UBIGINT);
+// 	names.emplace_back("number");
+
+// 	return_types.emplace_back(LogicalType::VARCHAR);
+// 	names.emplace_back("name");
+
+// 	return_types.emplace_back(LogicalType::VARCHAR);
+// 	names.emplace_back("type1");
+
+// 	return_types.emplace_back(LogicalType::VARCHAR);
+// 	names.emplace_back("type2");
+
+// 	return_types.emplace_back(LogicalType::FLOAT);
+// 	names.emplace_back("height(m)");
+
+// 	return_types.emplace_back(LogicalType::FLOAT);
+// 	names.emplace_back("weight(kg)");
+
+// 	return_types.emplace_back(LogicalType::INTEGER);
+// 	names.emplace_back("base_total");
+
+// 	return_types.emplace_back(LogicalType::INTEGER);
+// 	names.emplace_back("hp");
+
+// 	return_types.emplace_back(LogicalType::INTEGER);
+// 	names.emplace_back("attack");
+
+// 	return_types.emplace_back(LogicalType::INTEGER);
+// 	names.emplace_back("defense");
+
+// 	return_types.emplace_back(LogicalType::INTEGER);
+// 	names.emplace_back("special");
+
+// 	return_types.emplace_back(LogicalType::INTEGER);
+// 	names.emplace_back("speed");
+
+// 	return_types.emplace_back(LogicalType::INTEGER);
+// 	names.emplace_back("evolutions");
+
+// 	return_types.emplace_back(LogicalType::BOOLEAN);
+// 	names.emplace_back("is_legendary");
+
+// 	return_types.emplace_back(LogicalType::BOOLEAN);
+// 	names.emplace_back("is_duck");
+
+// 	return make_uniq<ListPokemonBindData>();
+// }
+
+// void ListPokemonMoves(ClientContext &context, TableFunctionInput &data_p, DataChunk &output) {
+// 	D_ASSERT(data_p.bind_data);
+// 	auto &bind_data = data_p.bind_data->CastNoConst<ListPokemonBindData>();
+
+// 	if (bind_data.indicator) {
+// 		output.SetCardinality(0);
+// 		return;
+// 	}
+// 	bind_data.indicator = true;
+
+// 	// Set output to 151 rows
+// 	output.SetCardinality(pokemon.size());
+
+// 	for (idx_t i = 0; i < pokemon.size(); i++) {
+// 		FlatVector::GetData<uint64_t>(output.data[0])[i] = pokemon[i].number;
+// 		FlatVector::GetData<duckdb::string_t>(output.data[1])[i] = duckdb::string_t(pokemon[i].name);
+// 		FlatVector::GetData<duckdb::string_t>(output.data[2])[i] = duckdb::string_t(pokemon[i].type1);
+// 		FlatVector::GetData<duckdb::string_t>(output.data[3])[i] = duckdb::string_t(pokemon[i].type2);
+// 		FlatVector::GetData<float>(output.data[4])[i] = pokemon[i].height;
+// 		FlatVector::GetData<float>(output.data[5])[i] = pokemon[i].weight;
+// 		FlatVector::GetData<int32_t>(output.data[6])[i] = pokemon[i].base_total;
+// 		FlatVector::GetData<int32_t>(output.data[7])[i] = pokemon[i].hp;
+// 		FlatVector::GetData<int32_t>(output.data[8])[i] = pokemon[i].attack;
+// 		FlatVector::GetData<int32_t>(output.data[9])[i] = pokemon[i].defense;
+// 		FlatVector::GetData<int32_t>(output.data[10])[i] = pokemon[i].special;
+// 		FlatVector::GetData<int32_t>(output.data[11])[i] = pokemon[i].speed;
+// 		FlatVector::GetData<int32_t>(output.data[12])[i] = pokemon[i].evolutions;
+// 		FlatVector::GetData<bool>(output.data[13])[i] = pokemon[i].is_legendary;
+// 		FlatVector::GetData<bool>(output.data[14])[i] = pokemon[i].is_duck;
+// 	}
+// }
+
+void ListPokemonMoves(ClientContext &, TableFunctionInput &data_p, DataChunk &output) {
+    // Reuse the same bind pattern as ListPokemon
+    D_ASSERT(data_p.bind_data);
+    auto &bind_data = data_p.bind_data->CastNoConst<ListPokemonBindData>(); // works fine, name doesn't matter
+
+    if (bind_data.indicator) {
+        output.SetCardinality(0);
+        return;
+    }
+    bind_data.indicator = true;
+
+    // 165 moves in Gen 1
+    output.SetCardinality(moves.size());
+
+    for (idx_t i = 0; i < moves.size(); ++i) {
+        const auto& move = moves[i];
+
+        FlatVector::GetData<string_t>(output.data[0])[i] = string_t(move.name);           // name
+        FlatVector::GetData<string_t>(output.data[1])[i] = string_t(move.type);           // type
+        FlatVector::GetData<int32_t>(output.data[2])[i]  = move.power;                    // power (-1 = status)
+        FlatVector::GetData<int32_t>(output.data[3])[i]  = move.accuracy;                  // accuracy (-1 = never misses)
+        FlatVector::GetData<int32_t>(output.data[4])[i]  = move.pp;                        // pp
+    }
+}
+
+
 static void LoadInternal(ExtensionLoader &loader) {
-	auto subscribe_function = TableFunction("list_pokemon", {}, ListPokemon, ListPokemonBind);
-	loader.RegisterFunction(subscribe_function);
+	auto list_pokemon = TableFunction("list_pokemon", {}, ListPokemon, ListPokemonBind);
+	auto list_pokemon_moves = TableFunction("list_pokemon_moves", {}, ListPokemonMoves, ListPokemonMovesBind);
+	loader.RegisterFunction(list_pokemon);
+	loader.RegisterFunction(list_pokemon_moves);
 }
 
 void PsyduckExtension::Load(ExtensionLoader &loader) {

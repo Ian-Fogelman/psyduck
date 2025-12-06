@@ -159,23 +159,24 @@ void ListPokemonMoves(ClientContext &context, TableFunctionInput &data_p, DataCh
 	for (idx_t i = 0; i < pokemon_moves.size(); i++) {
 		FlatVector::GetData<duckdb::string_t>(output.data[0])[i] = duckdb::string_t(pokemon_moves[i].name);
 		FlatVector::GetData<duckdb::string_t>(output.data[1])[i] = pokemon_moves[i].type;
-		// Handle power (optional)
-		if (pokemon_moves[i].power.has_value()) {
-			FlatVector::GetData<int32_t>(output.data[2])[i] = pokemon_moves[i].power.value();
+
+		// Handle power (0 means no value)
+		if (pokemon_moves[i].power != 0) {
+			FlatVector::GetData<int32_t>(output.data[2])[i] = pokemon_moves[i].power;
 		} else {
 			FlatVector::SetNull(output.data[2], i, true);
 		}
 
-		// Handle accuracy (optional)
-		if (pokemon_moves[i].accuracy.has_value()) {
-			FlatVector::GetData<int32_t>(output.data[3])[i] = pokemon_moves[i].accuracy.value();
+		// Handle accuracy (0 means no value)
+		if (pokemon_moves[i].accuracy != 0) {
+			FlatVector::GetData<int32_t>(output.data[3])[i] = pokemon_moves[i].accuracy;
 		} else {
 			FlatVector::SetNull(output.data[3], i, true);
 		}
 
-		// Handle pp (optional)
-		if (pokemon_moves[i].pp.has_value()) {
-			FlatVector::GetData<int32_t>(output.data[4])[i] = pokemon_moves[i].pp.value();
+		// Handle pp (0 means no value)
+		if (pokemon_moves[i].pp != 0) {
+			FlatVector::GetData<int32_t>(output.data[4])[i] = pokemon_moves[i].pp;
 		} else {
 			FlatVector::SetNull(output.data[4], i, true);
 		}

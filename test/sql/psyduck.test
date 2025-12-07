@@ -31,3 +31,7 @@ SELECT name FROM pokemon where number = 6;
 ----
 Charizard
 
+query I 
+SELECT count(*) FROM list_pokemon_moves();
+----
+165

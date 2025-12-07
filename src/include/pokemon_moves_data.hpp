@@ -14,7 +14,6 @@ struct Move {
 	int pp;
 };
 
-// Remove "inline" → now it's identical to your working pokemon vector
 vector<Move> moves = {{"Absorb", "Grass", 20, 100, 25},
                       {"Acid", "Poison", 40, 100, 30},
                       {"Acid Armor", "Poison", false, false, 20},

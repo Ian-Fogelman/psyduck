@@ -12,6 +12,7 @@
 #include "duckdb/parser/expression/function_expression.hpp"
 #include "duckdb/parser/tableref/table_function_ref.hpp"
 #include "pokemon_data.hpp"
+#include "pokemon_moves_data.hpp"
 
 namespace duckdb {
 
@@ -104,9 +105,64 @@ void ListPokemon(ClientContext &context, TableFunctionInput &data_p, DataChunk &
 	}
 }
 
+// List Pokemon Moves Begin
+struct ListPokemonMovesBindData : public TableFunctionData {
+	explicit ListPokemonMovesBindData() {
+	}
+	bool indicator = false;
+};
+
+static unique_ptr<FunctionData> ListPokemonMovesBind(ClientContext &, TableFunctionBindInput &,
+                                                     vector<LogicalType> &return_types, vector<string> &names) {
+	return_types.emplace_back(LogicalType::VARCHAR);
+	names.emplace_back("name");
+
+	return_types.emplace_back(LogicalType::VARCHAR);
+	names.emplace_back("type");
+
+	return_types.emplace_back(LogicalType::INTEGER);
+	names.emplace_back("power");
+
+	return_types.emplace_back(LogicalType::INTEGER);
+	names.emplace_back("accuracy");
+
+	return_types.emplace_back(LogicalType::INTEGER);
+	names.emplace_back("pp");
+
+	return make_uniq<ListPokemonBindData>(); // reuse the same struct
+}
+
+void ListPokemonMoves(ClientContext &, TableFunctionInput &data_p, DataChunk &output) {
+	// Reuse the same bind pattern as ListPokemon
+	D_ASSERT(data_p.bind_data);
+	auto &bind_data = data_p.bind_data->CastNoConst<ListPokemonBindData>(); // works fine, name doesn't matter
+
+	if (bind_data.indicator) {
+		output.SetCardinality(0);
+		return;
+	}
+	bind_data.indicator = true;
+
+	// 165 moves in Gen 1
+	output.SetCardinality(moves.size());
+
+	for (idx_t i = 0; i < moves.size(); ++i) {
+		const auto &move = moves[i];
+
+		FlatVector::GetData<string_t>(output.data[0])[i] = string_t(move.name); // name
+		FlatVector::GetData<string_t>(output.data[1])[i] = string_t(move.type); // type
+		FlatVector::GetData<int32_t>(output.data[2])[i] = move.power;           // power (-1 = status)
+		FlatVector::GetData<int32_t>(output.data[3])[i] = move.accuracy;        // accuracy (-1 = never misses)
+		FlatVector::GetData<int32_t>(output.data[4])[i] = move.pp;              // pp
+	}
+}
+// List Pokemon Moves End
+
 static void LoadInternal(ExtensionLoader &loader) {
-	auto subscribe_function = TableFunction("list_pokemon", {}, ListPokemon, ListPokemonBind);
-	loader.RegisterFunction(subscribe_function);
+	auto list_pokemon = TableFunction("list_pokemon", {}, ListPokemon, ListPokemonBind);
+	auto list_pokemon_moves = TableFunction("list_pokemon_moves", {}, ListPokemonMoves, ListPokemonMovesBind);
+	loader.RegisterFunction(list_pokemon);
+	loader.RegisterFunction(list_pokemon_moves);
 }
 
 void PsyduckExtension::Load(ExtensionLoader &loader) {

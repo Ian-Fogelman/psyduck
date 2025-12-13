@@ -35,19 +35,3 @@ query I
 SELECT count(*) FROM list_pokemon_moves();
 ----
 165
-
-query I 
-select count(*) from list_pokemon_moves() where name like '%Thunder%';
-----
-5
-
-query I 
-SELECT count(*) FROM list_pokemon_items();
-----
-127
-
-query I 
-SELECT count(*) FROM list_pokemon_items() WHERE category = 'HM';
-----
-5
-

@@ -13,6 +13,7 @@
 #include "duckdb/parser/tableref/table_function_ref.hpp"
 #include "pokemon_data.hpp"
 #include "pokemon_moves_data.hpp"
+#include "pokemon_items_data.hpp"
 
 namespace duckdb {
 
@@ -158,11 +159,59 @@ void ListPokemonMoves(ClientContext &, TableFunctionInput &data_p, DataChunk &ou
 }
 // List Pokemon Moves End
 
+// List Pokemon Items Begin
+struct ListPokemonItemsBindData : public TableFunctionData {
+	explicit ListPokemonItemsBindData() {
+	}
+	bool indicator = false;
+};
+
+static unique_ptr<FunctionData> ListPokemonItemsBind(ClientContext &, TableFunctionBindInput &,
+                                                     vector<LogicalType> &return_types, vector<string> &names) {
+	return_types.emplace_back(LogicalType::INTEGER);
+	names.emplace_back("id");
+	return_types.emplace_back(LogicalType::VARCHAR);
+	names.emplace_back("name");
+	return_types.emplace_back(LogicalType::VARCHAR);
+	names.emplace_back("category");
+	return_types.emplace_back(LogicalType::VARCHAR);
+	names.emplace_back("description");
+	return_types.emplace_back(LogicalType::VARCHAR);
+	names.emplace_back("location");
+	return_types.emplace_back(LogicalType::INTEGER);
+	names.emplace_back("price");
+	return make_uniq<ListPokemonItemsBindData>();
+}
+
+void ListPokemonItems(ClientContext &, TableFunctionInput &data_p, DataChunk &output) {
+	D_ASSERT(data_p.bind_data);
+	auto &bind_data = data_p.bind_data->CastNoConst<ListPokemonItemsBindData>();
+	if (bind_data.indicator) {
+		output.SetCardinality(0);
+		return;
+	}
+	bind_data.indicator = true;
+	// 127 items in Gen 1
+	output.SetCardinality(items.size());
+	for (idx_t i = 0; i < items.size(); ++i) {
+		const auto &item = items[i];
+		FlatVector::GetData<int32_t>(output.data[0])[i] = item.id;                     // id
+		FlatVector::GetData<string_t>(output.data[1])[i] = string_t(item.name);        // name
+		FlatVector::GetData<string_t>(output.data[2])[i] = string_t(item.category);    // category
+		FlatVector::GetData<string_t>(output.data[3])[i] = string_t(item.description); // description
+		FlatVector::GetData<string_t>(output.data[4])[i] = string_t(item.location);    // location
+		FlatVector::GetData<int32_t>(output.data[5])[i] = item.price;                  // price
+	}
+}
+// List Pokemon Items End
+
 static void LoadInternal(ExtensionLoader &loader) {
 	auto list_pokemon = TableFunction("list_pokemon", {}, ListPokemon, ListPokemonBind);
 	auto list_pokemon_moves = TableFunction("list_pokemon_moves", {}, ListPokemonMoves, ListPokemonMovesBind);
+	auto list_pokemon_items = TableFunction("list_pokemon_items", {}, ListPokemonItems, ListPokemonItemsBind);
 	loader.RegisterFunction(list_pokemon);
 	loader.RegisterFunction(list_pokemon_moves);
+	loader.RegisterFunction(list_pokemon_items);
 }
 
 void PsyduckExtension::Load(ExtensionLoader &loader) {

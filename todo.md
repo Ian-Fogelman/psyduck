@@ -1,6 +1,8 @@
 ## Core Functionality
 
-- [] Add pokemon gen 1 items
+- [x] Add pokemon gen 1 items
+- [] Add scalar function random_pokemon() that selects a random pokemon and says "A wild {} appears!".
 
 ### Test Coverage
-- [] Add tests for Add pokemon gen 1 items function
+- [x] Add tests for Add pokemon gen 1 items function.
+- [] Add tests for random_pokemon().

@@ -113,3 +113,4 @@ To install and load the latest stable release:
 INSTALL psyduck FROM community;
 LOAD psyduck;
 ```
+
